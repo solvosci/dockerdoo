@@ -135,9 +135,23 @@ RUN pip3 install --prefix=/usr/local --no-cache-dir --upgrade --requirement http
     && apt-get autopurge -yqq \
     && rm -rf /var/lib/apt/lists/* /tmp/*
 
-RUN git clone --depth 100 -b ${ODOO_VERSION} https://github.com/odoo/odoo.git /opt/odoo \
+# ENV ODOO_HASH "50d5456c2eeae5cc8bc2cb6851ee4e815d22b192"
+
+RUN apt-get update && apt-get install -y unzip curl \
+    && curl -L -o /tmp/odoo.zip "https://github.com/odoo/odoo/archive/6c8a82cfe0b84c1b332caf559ee34dbd695104b9.zip" \
+    && unzip /tmp/odoo.zip -d /opt/ \
+    && mv /opt/odoo-6c8a82cfe0b84c1b332caf559ee34dbd695104b9 /opt/odoo \
     && pip3 install --editable /opt/odoo \
     && rm -rf /var/lib/apt/lists/* /tmp/*
+
+
+# RUN git clone -b ${ODOO_VERSION} https://github.com/odoo/odoo.git --single-branch --depth 1 /opt/odoo \
+#     && cd /opt/odoo \
+#     && git fetch \
+#     && git checkout ${ODOO_HASH} \ 
+#     && pip3 install --editable /opt/odoo \
+#     && rm -rf /var/lib/apt/lists/* /tmp/*
+# ENV UPGRADE_ODOO=${UPGRADE_ODOO:-"1"}
 
 FROM base as production
 
